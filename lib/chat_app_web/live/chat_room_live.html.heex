@@ -1,0 +1,20 @@
+<div id="chat-room" class="h-full max-h-[1080px]">
+  <h1 class="text-center ">My simple chat app</h1>
+  <%= if @user_joined do %>
+    <div id="messages" class="h-[480px] border border-black mb-1 overflow-scroll px-2 pt-2" phx-hook="ScrollToBottom">
+      <%= for message <- Enum.reverse(@messages) do %>
+        <p><strong><%= message.user %>:</strong> <%= message.body %></p>
+      <% end %>
+    </div>
+
+    <form phx-submit="send_message" phx-change="update_message" class="flex gap-2">
+      <input type="text" name="message" placeholder="Enter your message" value={@message} autocomplete="off" class="w-full"/>
+      <button type="submit" class="border border-black">Send</button>
+    </form>
+  <% else %>
+    <form phx-submit="set_username" class="flex justify-center item-center gap-2">
+      <input type="text" name="username" placeholder="Enter your name" autocomplete="off" />
+      <button type="submit" class="border border-black">Join Chat</button>
+    </form>
+  <% end %>
+</div>
