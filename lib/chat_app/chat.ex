@@ -23,7 +23,9 @@ defmodule ChatApp.Chat do
   alias ChatApp.Chat.Message
 
   def list_messages do
-    Repo.all(Message)
+    Message
+    |> order_by(desc: :inserted_at)
+    |> Repo.all()
   end
 
   def create_message(attrs \\ %{}) do
