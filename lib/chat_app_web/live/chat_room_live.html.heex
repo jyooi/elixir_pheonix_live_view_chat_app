@@ -3,8 +3,11 @@
   <%= if @user_joined do %>
     <div id="messages" class="h-[480px] border border-black mb-1 overflow-scroll px-2 pt-2" phx-hook="ScrollToBottom">
       <%= for message <- Enum.reverse(@messages) do %>
-        <p><strong><%= message.user %>:</strong> <%= message.body %></p>
-      <% end %>
+      <div class="flex justify-between">
+        <div><strong><%= message.user %>:</strong> <%= message.body %> </div>
+        <small class="text-right"><%= Timex.format!(message.inserted_at, "{Mshort} {D} {h12}:{m} {AM}") %></small>
+      </div>
+    <% end %>
     </div>
 
     <form phx-submit="send_message" phx-change="update_message" class="flex gap-2">
