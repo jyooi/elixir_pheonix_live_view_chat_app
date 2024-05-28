@@ -1,21 +1,27 @@
 <div id="chat-room" class="h-full max-h-[1080px]">
-  <h1 class="text-center ">My simple chat app</h1>
+  <h1 class="text-center">My simple chat app</h1>
   <%= if @user_joined do %>
     <div id="messages" class="h-[480px] border border-black mb-1 overflow-scroll px-2 pt-2" phx-hook="ScrollToBottom">
       <%= for message <- Enum.reverse(@messages) do %>
-      <div class="flex justify-between">
-        <div><strong><%= message.user %>:</strong> <%= message.body %> </div>
-        <small class="text-right"><%= Timex.format!(message.inserted_at, "{Mshort} {D} {h12}:{m} {AM}") %></small>
-      </div>
-    <% end %>
+        <div class="flex justify-between">
+          <div><strong><%= message.user %>:</strong> <%= message.body %></div>
+          <small>
+            <%= ChatAppWeb.ChatRoomLive.convert_to_local_time(message.inserted_at, @timezone) %>
+          </small>
+        </div>
+      <% end %>
     </div>
 
     <form phx-submit="send_message" phx-change="update_message" class="flex gap-2">
       <input type="text" name="message" placeholder="Enter your message" value={@message} autocomplete="off" class="w-full"/>
       <button type="submit" class="border border-black">Send</button>
     </form>
+
+    <form phx-submit="clear_messages" class="flex justify-center mt-2">
+      <button type="submit" class="border border-red-600 text-red-600">Clear Chat</button>
+    </form>
   <% else %>
-    <form phx-submit="set_username" class="flex justify-center item-center gap-2">
+    <form phx-submit="set_username" class="flex justify-center items-center gap-2">
       <input type="text" name="username" placeholder="Enter your name" autocomplete="off" />
       <button type="submit" class="border border-black">Join Chat</button>
     </form>

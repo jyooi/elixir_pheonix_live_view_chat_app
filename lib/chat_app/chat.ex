@@ -34,6 +34,11 @@ defmodule ChatApp.Chat do
     |> Repo.insert()
   end
 
+  def clear_messages do
+    from(m in Message)
+    |> Repo.delete_all()
+  end
+
   def list_rooms do
     Repo.all(Room)
   end
