@@ -1,25 +1,25 @@
 defmodule ChatAppWeb.ChatRoomLive do
   use ChatAppWeb, :live_view
   alias ChatApp.Chat
-  import Timex
+  alias ChatApp.Accounts
 
-  def mount(params, _session, socket) do
+  @spec mount(map(), nil | maybe_improper_list() | map(), Phoenix.LiveView.Socket.t()) ::
+          {:ok, any()}
+  def mount(params, session, socket) do
     timezone = Map.get(params, "timezone", "Etc/UTC")
+    user = Accounts.get_user_by_session_token(session["user_token"])
     if connected?(socket), do: Phoenix.PubSub.subscribe(ChatApp.PubSub, "chat_room")
     messages = Chat.list_messages()
 
     {:ok,
      assign(socket,
        messages: messages,
-       username: "",
        user_joined: false,
        message: "",
-       timezone: timezone
+       timezone: timezone,
+       session_id: session["live_socket_id"],
+       current_user: user
      )}
-  end
-
-  def handle_event("set_username", %{"username" => username}, socket) do
-    {:noreply, assign(socket, username: username, user_joined: true)}
   end
 
   def handle_event("update_message", %{"message" => message}, socket) do
@@ -33,7 +33,7 @@ defmodule ChatAppWeb.ChatRoomLive do
   end
 
   def handle_event("send_message", %{"message" => message}, socket) do
-    new_message = %{user: socket.assigns.username, body: message}
+    new_message = %{user: socket.assigns.current_user.email, body: message}
 
     case Chat.create_message(new_message) do
       {:ok, message} ->
